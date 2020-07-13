@@ -13,6 +13,30 @@ type NavMesh struct {
 	pathTrianglesCache map[int32]map[int32][][3]int32 `json:"-"`
 }
 
+func (nm *NavMesh) InitWithVertices(verticesSlice [][]*V3) {
+	nm.Vertices = make([]*V3, 0)
+	verticesMap := map[string]int32{}
+	index := int32(0)
+	for _, vertices := range verticesSlice {
+		for _, v := range vertices {
+			key := getNavMeshKey(v)
+			if _, ok := verticesMap[key]; !ok {
+				verticesMap[key] = index
+				nm.Vertices = append(nm.Vertices, v)
+				index++
+			}
+		}
+	}
+	for _, d := range verticesSlice {
+		nm.Triangles = append(nm.Triangles, [3]int32{
+			verticesMap[getNavMeshKey(d[0])],
+			verticesMap[getNavMeshKey(d[1])],
+			verticesMap[getNavMeshKey(d[2])],
+		})
+	}
+	nm.Dijkstra.CreateMatrixFromMesh(nm.Vertices, nm.Triangles)
+}
+
 func (nm *NavMesh) FindingPath(src, dest *V3) (interface{}, error) {
 	if srcID, destID := nm.getTriangleId(src), nm.getTriangleId(dest); srcID < 0 || destID < 0 {
 		return nil, fmt.Errorf("finding path error,srcID:%d,destID:%d", srcID, destID)
@@ -179,4 +203,8 @@ func inside(pt, v1, v2, v3 *V3) bool {
 
 func sign(p1, p2, p3 *V3) float64 {
 	return (p1.X-p3.X)*(p2.Y-p3.Y) - (p2.X-p3.X)*(p1.Y-p3.Y)
+}
+
+func getNavMeshKey(v *V3) string {
+	return fmt.Sprintf("%.0f/%.0f/%.0f", v.X, v.Y, v.Z)
 }

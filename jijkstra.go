@@ -72,19 +72,19 @@ type Dijkstra struct {
 }
 
 // create neighbour matrix
-func (d *Dijkstra) CreateMatrixFromMesh(mesh Mesh) {
+func (d *Dijkstra) CreateMatrixFromMesh(vertices []*V3, triangles [][3]int32) {
 	d.Matrix = make(map[int32][]WeightedTriangle)
-	for i := 0; i < len(mesh.Triangles); i++ {
-		for j := 0; j < len(mesh.Triangles); j++ {
+	for i := 0; i < len(triangles); i++ {
+		for j := 0; j < len(triangles); j++ {
 			if i == j {
 				continue
 			}
 
-			if len(intersect(mesh.Triangles[i], mesh.Triangles[j])) == 2 {
-				x1 := (mesh.Vertices[mesh.Triangles[i][0]].X + mesh.Vertices[mesh.Triangles[i][1]].X + mesh.Vertices[mesh.Triangles[i][2]].X) / 3.0
-				y1 := (mesh.Vertices[mesh.Triangles[i][0]].Y + mesh.Vertices[mesh.Triangles[i][1]].Y + mesh.Vertices[mesh.Triangles[i][2]].Y) / 3.0
-				x2 := (mesh.Vertices[mesh.Triangles[j][0]].X + mesh.Vertices[mesh.Triangles[j][1]].X + mesh.Vertices[mesh.Triangles[j][2]].X) / 3.0
-				y2 := (mesh.Vertices[mesh.Triangles[j][0]].Y + mesh.Vertices[mesh.Triangles[j][1]].Y + mesh.Vertices[mesh.Triangles[j][2]].Y) / 3.0
+			if len(intersect(triangles[i], triangles[j])) == 2 {
+				x1 := (vertices[triangles[i][0]].X + vertices[triangles[i][1]].X + vertices[triangles[i][2]].X) / 3.0
+				y1 := (vertices[triangles[i][0]].Y + vertices[triangles[i][1]].Y + vertices[triangles[i][2]].Y) / 3.0
+				x2 := (vertices[triangles[j][0]].X + vertices[triangles[j][1]].X + vertices[triangles[j][2]].X) / 3.0
+				y2 := (vertices[triangles[j][0]].Y + vertices[triangles[j][1]].Y + vertices[triangles[j][2]].Y) / 3.0
 				weight := math.Sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1))
 				d.Matrix[int32(i)] = append(d.Matrix[int32(i)], WeightedTriangle{int32(j), uint32(weight)})
 			}
