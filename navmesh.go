@@ -50,6 +50,11 @@ func (nm *NavMesh) FindingPath(src, dest *V3) (*Path, error) {
 	}
 }
 
+// v 点是否是可行走区域
+func (nm *NavMesh) IsWalkable(v *V3) bool {
+	return nm.getTriangleId(v) > -1
+}
+
 func (nm *NavMesh) route(pathTriangle [][3]int32, src, dest *V3) (*Path, error) {
 	path := &Path{PathList: []*V3{src}}
 	// 计算临边
@@ -183,9 +188,9 @@ func (nm *NavMesh) updateVis(v0 *V3, vertices []*V3, indices []int32, i1, i2 int
 	}
 }
 
-func (nm *NavMesh) getTriangleId(pt *V3) int32 {
+func (nm *NavMesh) getTriangleId(v *V3) int32 {
 	for k := 0; k < len(nm.Triangles); k++ {
-		if inside(pt,
+		if inside(v,
 			&V3{X: nm.Vertices[nm.Triangles[k][0]].X, Y: nm.Vertices[nm.Triangles[k][0]].Y},
 			&V3{X: nm.Vertices[nm.Triangles[k][1]].X, Y: nm.Vertices[nm.Triangles[k][1]].Y},
 			&V3{X: nm.Vertices[nm.Triangles[k][2]].X, Y: nm.Vertices[nm.Triangles[k][2]].Y}) {
