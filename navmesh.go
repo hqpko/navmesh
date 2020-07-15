@@ -37,7 +37,8 @@ func (nm *NavMesh) InitWithVertices(verticesSlice [][]*V3) {
 	nm.Dijkstra.CreateMatrixFromMesh(nm.Vertices, nm.Triangles)
 }
 
-func (nm *NavMesh) FindingPath(src, dest *V3) (interface{}, error) {
+// 在 X,Y 平面上寻路
+func (nm *NavMesh) FindingPath(src, dest *V3) (*Path, error) {
 	if srcID, destID := nm.getTriangleId(src), nm.getTriangleId(dest); srcID < 0 || destID < 0 {
 		return nil, fmt.Errorf("finding path error,srcID:%d,destID:%d", srcID, destID)
 	} else if srcID == destID {
