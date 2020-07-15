@@ -23,3 +23,19 @@ func (v *V3) Distance(target *V3) float64 {
 	dy := v.Y - target.Y
 	return math.Sqrt(dx*dx + dy*dy)
 }
+
+// 旋转一个弧度
+func (v *V3) Rotate(radian float64) *V3 {
+	sin := math.Sin(radian)
+	cos := math.Cos(radian)
+	v.X = cos*v.X + sin*v.Y
+	v.Y = cos*v.Y - sin*v.X
+	return v
+}
+
+// 目标点是否在半径为 distance 的圆内
+func (v *V3) InRange(target *V3, distance float64) bool {
+	x := target.X - v.X
+	y := target.Y - v.Y
+	return x*x+y*y <= distance*distance
+}
